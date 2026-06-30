@@ -1,0 +1,454 @@
+
+/* ---------- 1. Variables de thème ---------- */
+:root {
+  /* Les 6 "encres" de Lorcana */
+  --ink-amber:    #f6a623;
+  --ink-amethyst: #9b5de5;
+  --ink-emerald:  #2ec4a6;
+  --ink-ruby:     #e63946;
+  --ink-sapphire: #4895ef;
+  --ink-steel:    #adb5bd;
+
+  --gold:        #e9c46a;
+  --gold-bright: #ffe7a0;
+  --night:       #0b1026;
+  --night-deep:  #060818;
+  --parchment:   #f4ead2;
+
+  --radius:      14px;
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, .45);
+  --shadow-glow: 0 0 18px rgba(233, 196, 106, .55);
+}
+
+/* ---------- 2. Base ---------- */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  font-family: "Cinzel", "Times New Roman", serif;
+  color: var(--parchment);
+  background:
+    radial-gradient(circle at 20% 15%, rgba(72, 149, 239, .18), transparent 45%),
+    radial-gradient(circle at 80% 85%, rgba(155, 93, 229, .20), transparent 45%),
+    radial-gradient(circle at 50% 50%, #131a3a, var(--night) 60%, var(--night-deep));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  overflow-x: hidden;
+}
+
+/* Poussière d'étoiles en surimpression */
+.sparkles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  /* Couche 1 : étoiles fines et nombreuses (tuile de 180px qui se répète) */
+  background-image:
+    radial-gradient(1.5px 1.5px at  24px  18px, #fff, transparent),
+    radial-gradient(1px   1px   at  82px  54px, rgba(255,255,255,.85), transparent),
+    radial-gradient(1.5px 1.5px at 140px  30px, var(--gold-bright), transparent),
+    radial-gradient(1px   1px   at  46px 120px, rgba(255,255,255,.7), transparent),
+    radial-gradient(2px   2px   at 120px 150px, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 165px 100px, var(--gold), transparent);
+  background-size: 180px 180px;
+  background-repeat: repeat;
+  opacity: .8;
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+/* Couche 2 : grosses étoiles colorées, tuile plus large -> casse la répétition */
+.sparkles::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(2px 2px at  60px  80px, var(--ink-sapphire), transparent),
+    radial-gradient(2.5px 2.5px at 220px 200px, var(--gold-bright), transparent),
+    radial-gradient(2px 2px at 300px  60px, #fff, transparent),
+    radial-gradient(2px 2px at 130px 280px, var(--ink-amethyst), transparent);
+  background-size: 340px 340px;
+  background-repeat: repeat;
+  animation: twinkle 6s ease-in-out infinite alternate-reverse;
+}
+@keyframes twinkle { from { opacity: .35; } to { opacity: .9; } }
+
+/* ---------- 3. Cadre du jeu ---------- */
+.game {
+  position: relative;
+  width: min(640px, 100%);
+  padding: 28px 28px 22px;
+  border-radius: 22px;
+  background: linear-gradient(160deg, rgba(20, 27, 58, .92), rgba(8, 11, 28, .94));
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  box-shadow: var(--shadow-soft), inset 0 0 40px rgba(0, 0, 0, .5);
+}
+/* Liseré doré ornemental */
+.game::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(233, 196, 106, .45);
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+/* ---------- 4. En-tête ---------- */
+.game__header { text-align: center; margin-bottom: 22px; }
+
+.game__title {
+  font-family: "Cinzel Decorative", serif;
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold) 55%, #b8860b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 10px rgba(233, 196, 106, .35);
+}
+
+.game__subtitle {
+  margin-top: 6px;
+  font-size: .95rem;
+  font-style: italic;
+  color: rgba(244, 234, 210, .75);
+}
+
+/* ---------- 5. Tableau de score ---------- */
+.scoreboard {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 8px 22px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .35);
+  border: 1px solid rgba(233, 196, 106, .5);
+  box-shadow: var(--shadow-glow);
+}
+.scoreboard__label {
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: .7rem;
+  color: var(--gold);
+}
+.scoreboard__value {
+  font-family: "Cinzel Decorative", serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--gold-bright);
+  min-width: 2ch;
+  text-align: center;
+}
+
+/* ---------- 6. Plateau (grille 3 x 3) ---------- */
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 8px;
+}
+
+/* ---------- 7. Carte ---------- */
+.card {
+  position: relative;
+  aspect-ratio: 5 / 7;            /* proportions d'une carte à jouer */
+  border-radius: var(--radius);
+  cursor: pointer;
+  user-select: none;
+  transition: transform .15s ease, box-shadow .25s ease;
+  box-shadow: var(--shadow-soft);
+}
+.card:hover { transform: translateY(-4px) scale(1.02); }
+.card:active { transform: scale(.97); }
+
+/* Permet une éventuelle structure interne (modèle à 2 faces) */
+.card__inner,
+.card__face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+}
+
+/* =====================================================================
+   7a. DOS DE CARTE  (état par défaut)
+   Image de fond définie ici. Quand ton JS vide background-image
+   (carte.style.backgroundImage = ""), la carte reprend ce dos.
+   ===================================================================== */
+.card,
+.card__face--back {
+  background-color: #101a45;
+  background-image: url("../images/back.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 3px solid var(--gold);
+  overflow: hidden;
+} 
+.card--target {
+  border-color: var(--gold-bright);
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--shadow-soft), 0 0 26px rgba(255, 231, 160, .9);
+  animation: pop-in .2s ease, target-glow 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes pop-in {
+  from { transform: scale(.6); opacity: 0; }
+  to   { transform: scale(1);  opacity: 1; }
+}
+@keyframes target-glow {
+  from { box-shadow: var(--shadow-soft), 0 0 14px rgba(255, 231, 160, .6); }
+  to   { box-shadow: var(--shadow-soft), 0 0 34px rgba(255, 231, 160, 1); }
+}
+
+/* Petit retour visuel quand on touche une cible (classe optionnelle) */
+.card--hit { animation: hit-flash .3s ease; }
+@keyframes hit-flash {
+  0%   { filter: brightness(2.2); transform: scale(1.1); }
+  100% { filter: brightness(1);   transform: scale(1); }
+}
+
+/* ---------- 8. Pied de page ---------- */
+.game__footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: .8rem;
+  font-style: italic;
+  color: rgba(244, 234, 210, .6);
+}
+
+/* ---------- 9. Sélecteur de difficulté ---------- */
+.difficulty {
+  border: none;
+  margin: 4px 0 16px;
+  padding: 0;
+  text-align: center;
+}
+.difficulty__legend {
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: .72rem;
+  color: var(--gold);
+}
+
+/* Les vrais boutons radio sont masqués (mais accessibles au clavier) */
+.difficulty__input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+/* Disposition en 3 cartes côte à côte */
+.difficulty {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.difficulty__legend { grid-column: 1 / -1; }
+
+.difficulty__option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: rgba(0, 0, 0, .3);
+  border: 2px solid rgba(233, 196, 106, .25);
+  transition: transform .15s ease, border-color .2s ease, box-shadow .25s ease, background .2s ease;
+}
+.difficulty__option:hover {
+  transform: translateY(-3px);
+  border-color: rgba(233, 196, 106, .6);
+}
+.difficulty__icon { font-size: 1.6rem; line-height: 1; }
+.difficulty__name {
+  font-family: "Cinzel Decorative", serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--parchment);
+}
+.difficulty__desc {
+  font-size: .68rem;
+  font-style: italic;
+  color: rgba(244, 234, 210, .6);
+}
+
+/* État SÉLECTIONNÉ :  */
+.difficulty__input:checked + .difficulty__option {
+  background: rgba(233, 196, 106, .12);
+  box-shadow: 0 0 18px rgba(233, 196, 106, .35), inset 0 0 0 1px rgba(255, 231, 160, .4);
+}
+#diff-easy:checked    + .difficulty__option { border-color: var(--ink-emerald); }
+#diff-normal:checked  + .difficulty__option { border-color: var(--gold-bright); }
+#diff-extreme:checked + .difficulty__option { border-color: var(--ink-ruby); }
+
+#diff-easy:checked    + .difficulty__option .difficulty__name { color: var(--ink-emerald); }
+#diff-normal:checked  + .difficulty__option .difficulty__name { color: var(--gold-bright); }
+#diff-extreme:checked + .difficulty__option .difficulty__name { color: var(--ink-ruby); }
+
+/* Accessibilité clavier : halo quand on navigue au Tab */
+.difficulty__input:focus-visible + .difficulty__option {
+  outline: 3px solid var(--ink-sapphire);
+  outline-offset: 2px;
+}
+
+/* ---------- 10. Bouton magique ---------- */
+.controls {
+  text-align: center;
+  margin: 4px 0 18px;
+}
+
+.btn-magic {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 34px;
+  font-family: "Cinzel Decorative", serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--night-deep);
+  cursor: pointer;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold) 55%, #c9971f);
+  box-shadow: 0 6px 20px rgba(233, 196, 106, .45), inset 0 1px 0 rgba(255, 255, 255, .6);
+  overflow: hidden;
+  transition: transform .15s ease, box-shadow .25s ease, filter .2s ease;
+}
+.btn-magic:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 10px 28px rgba(233, 196, 106, .7), inset 0 1px 0 rgba(255, 255, 255, .6);
+}
+.btn-magic:active { transform: translateY(0) scale(.97); }
+.btn-magic:focus-visible { outline: 3px solid var(--ink-sapphire); outline-offset: 3px; }
+.btn-magic:disabled { opacity: .45; cursor: not-allowed; transform: none; filter: grayscale(.4); }
+
+.btn-magic__label { position: relative; z-index: 1; }
+
+/* Reflet lumineux qui balaie le bouton */
+.btn-magic__glow {
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .85), transparent);
+  transform: skewX(-20deg);
+  animation: sheen 2.8s ease-in-out infinite;
+}
+@keyframes sheen {
+  0%, 60% { left: -60%; }
+  100%    { left: 130%; }
+}
+
+/* ---------- 11. Modale de fin de partie ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+/* État caché : le JS ajoute/retire la classe .is-hidden */
+.modal.is-hidden { display: none; }
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 6, 18, .72);
+  backdrop-filter: blur(4px);
+  animation: fade-in .25s ease;
+}
+
+.modal__card {
+  position: relative;
+  width: min(420px, 100%);
+  text-align: center;
+  padding: 38px 32px 32px;
+  border-radius: 22px;
+  background: linear-gradient(160deg, #1a2350, #0a1030);
+  border: 2px solid var(--gold);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .6), 0 0 40px rgba(233, 196, 106, .35);
+  animation: modal-pop .35s cubic-bezier(.18, .89, .32, 1.28);
+}
+.modal__card::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(233, 196, 106, .4);
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+/* Sceau doré au sommet de la carte */
+.modal__seal {
+  width: 64px;
+  height: 64px;
+  margin: -64px auto 12px;
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+  color: var(--night-deep);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, var(--gold-bright), var(--gold));
+  box-shadow: 0 0 22px rgba(233, 196, 106, .8);
+}
+
+.modal__title {
+  font-family: "Cinzel Decorative", serif;
+  font-size: 1.7rem;
+  color: var(--gold-bright);
+  text-shadow: 0 0 14px rgba(233, 196, 106, .4);
+}
+.modal__text {
+  margin-top: 10px;
+  color: rgba(244, 234, 210, .8);
+  font-style: italic;
+}
+.modal__score {
+  margin: 6px 0 24px;
+  font-family: "Cinzel Decorative", serif;
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: var(--gold-bright);
+}
+.modal__score small {
+  display: block;
+  font-family: "Cinzel", serif;
+  font-size: .8rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: var(--gold);
+}
+
+@keyframes fade-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-pop {
+  from { transform: scale(.8) translateY(20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0);     opacity: 1; }
+}
+
+/* ---------- 12. Responsive ---------- */
+@media (max-width: 420px) {
+  .game { padding: 18px; }
+  .game-board { gap: 10px; }
+  .difficulty__desc { display: none; }
+}
+
+/* Respecte les préférences de réduction d'animation */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

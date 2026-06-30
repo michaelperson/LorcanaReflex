@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lorcana Reflex</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/script.js" defer></script>
+</head>
+<body>
+
+  <!-- Voile magique d'arrière-plan (purement décoratif) -->
+  <div class="sparkles" aria-hidden="true"></div>
+
+  <main class="game">
+
+    <!-- ===== En-tête ===== -->
+    <header class="game__header">
+      <h1 class="game__title">Lorcana&nbsp;Reflex</h1>
+      <p class="game__subtitle">Clique sur les Illumineurs avant qu'ils ne disparaissent&hellip;</p>
+
+      <!-- Panneau de score : JS mettra à jour #score -->
+      <div class="scoreboard">
+        <span class="scoreboard__label">Lumière récoltée</span>
+        <span class="scoreboard__value" id="score">0</span>
+      </div>
+    </header>
+
+    <fieldset class="difficulty">
+      <legend class="difficulty__legend">Niveau de difficulté</legend>
+
+      <input type="radio" name="difficulty" id="diff-easy"
+            class="difficulty__input" value="facile" data-spawn="1100">
+      <label class="difficulty__option difficulty__option--easy" for="diff-easy">
+        <span class="difficulty__icon">🌙</span>
+        <span class="difficulty__name">Facile</span>
+        <span class="difficulty__desc">Apparitions lentes</span>
+      </label>
+
+      <input type="radio" name="difficulty" id="diff-normal"
+            class="difficulty__input" value="normal" data-spawn="800" checked>
+      <label class="difficulty__option difficulty__option--normal" for="diff-normal">
+        <span class="difficulty__icon">✦</span>
+        <span class="difficulty__name">Normal</span>
+        <span class="difficulty__desc">Rythme classique</span>
+      </label>
+
+      <input type="radio" name="difficulty" id="diff-extreme"
+            class="difficulty__input" value="extreme" data-spawn="500">
+      <label class="difficulty__option difficulty__option--extreme" for="diff-extreme">
+        <span class="difficulty__icon">🔥</span>
+        <span class="difficulty__name">Extrême</span>
+        <span class="difficulty__desc">Réflexes d'Illumineur</span>
+      </label>
+    </fieldset>
+
+  
+    <div class="controls">
+      <button type="button" class="btn-magic" id="start-btn">
+        <span class="btn-magic__glow" aria-hidden="true"></span>
+        <span class="btn-magic__label">✦ Lancer la partie</span>
+      </button>
+    </div>
+
+    <section class="game-board" id="game-board" aria-label="Plateau de jeu">
+      <!-- Cartes générées dynamiquement par JavaScript -->
+    </section>
+
+    <footer class="game__footer">
+      <p>Que la magie de Lorcana soit avec ton code. &#10022;</p>
+    </footer>
+
+  </main>
+
+  <!--
+      Modale de fin de partie  
+  -->
+  <div class="modal is-hidden" id="end-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal__backdrop"></div>
+    <div class="modal__card">
+      <div class="modal__seal" aria-hidden="true">✦</div>
+      <h2 class="modal__title" id="modal-title">Partie terminée&nbsp;!<span id="finlevel"></span></h2>
+      <p class="modal__text">Tu as récolté</p>
+      <p class="modal__score"><span id="final-score">0</span> <small>points de lumière</small></p>
+      <button type="button" class="btn-magic" id="replay-btn">
+        <span class="btn-magic__glow" aria-hidden="true"></span>
+        <span class="btn-magic__label">↻ Rejouer</span>
+      </button>
+    </div>
+  </div>
+
+  <!--
+    ====================================================================
+    MODÈLE DE CARTE 
+
+      <div class="card">
+        <div class="card__inner">
+          <div class="card__face card__face--back"></div>
+          <div class="card__face card__face--front"></div>
+        </div>
+      </div>
+    ====================================================================
+  -->
+
+</body>
+</html>
